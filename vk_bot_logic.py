@@ -1,13 +1,9 @@
 import vk_api
-from pathlib import Path
-import json
-import requests
-from io import BytesIO
-from vk_api.longpoll import VkLongPoll, VkEventType
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
-from config import VK_TOKEN, BASE_DIR
 from vk_api import VkUpload
-from vk_api.keyboard import VkKeyboard, VkKeyboardButton, VkKeyboardColor
+from vk_api.longpoll import VkLongPoll
+from vk_api.keyboard import VkKeyboard
+
+from config import VK_TOKEN, BASE_DIR
 from views import get_product_objects, get_section_dict
 
 
@@ -23,6 +19,12 @@ for elem, value in section_dict.items():
 
 
 def send_message(**kwargs):
+	"""
+	Отдаёт сообщение пользователю в зависимости от задачи
+	(в группу или лично пользователю,
+	с клавиатурой или без неё,
+	с фото или без фото)
+	"""
 	post = {
 		'keyboard': keyboard.get_keyboard(),
 		'random_id': 0
@@ -41,35 +43,13 @@ def send_message(**kwargs):
 	vk.messages.send(**post)
 
 
-def send_photo(url):
-	upload = vk_api.VkUpload(vk)
-	try:
-		photo = upload.photo_messages(url)
-	except FileNotFoundError:
-		photo = upload.photo_messages('media/default.png')
-		# print(Path(BASE_DIR, 'media/default.png'))
-	owner_id = photo[0]['owner_id']
-	photo_id = photo[0]['id']
-	access_key = photo[0]['access_key']
-	attachment = f'photo{owner_id}_{photo_id}_{access_key}'
-	return attachment
-
-
 def button_response(section_id: int):
+	"""
+	В зависимости от выбранной категории (по нажатию кнопки)
+	возвращает соответствующую продукцию с описанием, с фотографией
+	"""
 	products = get_product_objects(section_id)
-	# text = {"type": "carousel", "elements": []}
 	for product in products:
-		# text['elements'].append({
-		# 	"photo_id": product['photo'],
-		# 	"description": product['description'],
-		# 	"action": {
-		# 		"type": "open_photo"
-		# 	}, "buttons": []
-		# })
 		text = str(product['name']) + '\n' + str(product['description'])
-		attachment = send_photo(product['photo'])
+		attachment = product['attachment']
 		yield {'message': text, 'attachment': attachment}
-	# carousel = json.dumps(text, ensure_ascii=False).encode('utf-8')
-	# carousel = str(carousel.decode('utf-8'))
-	# print(carousel)
-	# return carousel
