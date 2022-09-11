@@ -1,11 +1,11 @@
 import psycopg2
-import config
+import vk_api
 import time
 
-import vk_api
-from config import VK_TOKEN, BASE_DIR
+import config
 
-vk_session = vk_api.VkApi(token=VK_TOKEN)
+
+vk_session = vk_api.VkApi(token=config.VK_TOKEN)
 vk = vk_session.get_api()
 
 full_products = dict()

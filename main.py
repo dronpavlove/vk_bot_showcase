@@ -1,4 +1,5 @@
 from vk_api.longpoll import VkEventType
+
 from vk_bot_logic import long_poll, send_message, section_dict, button_response
 
 
