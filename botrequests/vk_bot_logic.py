@@ -49,7 +49,11 @@ def button_response(section_id: int):
 	возвращает соответствующую продукцию с описанием, с фотографией
 	"""
 	products = get_product_objects(section_id)
-	for product in products:
-		text = str(product['name']) + '\n' + str(product['description'])
-		attachment = product['attachment']
-		yield {'message': text, 'attachment': attachment}
+
+	if len(products) == 0:
+		yield {'message': 'В базе продукция сейчас не найдена. Попробуйте позже...', 'attachment': '543'}
+	else:
+		for product in products:
+			text = str(product['name']) + '\n' + str(product['description'])
+			attachment = product['attachment']
+			yield {'message': text, 'attachment': attachment}

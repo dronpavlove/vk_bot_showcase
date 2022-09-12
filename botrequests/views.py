@@ -46,7 +46,7 @@ def get_product_objects(section: int):
 	if (edit_timer() is True) or \
 			(section not in full_products):
 		product_tuple = get_objects_for_db(f"""SELECT NAME, DESCRIPTION, PHOTO
-						FROM product WHERE section_id = {section};""")
+						FROM product WHERE section_id = {section} ORDER BY create_date DESC;""")
 		products = [{
 			'name': i[0], 'description': i[1], 'photo': i[2], 'attachment': send_photo(i[2])
 		} for i in product_tuple]
