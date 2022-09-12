@@ -13,6 +13,10 @@ def start():
 			clean_text = event.text.split(' ')[-1]
 
 			if clean_text in section_dict:
+				send_message(
+					message='Запрос принят. Минуточку...',
+					event=event, keyboard=False
+				)
 				for i in button_response(section_dict[clean_text]):
 					send_message(message=i['message'], event=event, attachment=i['attachment'], keyboard=False)
 				send_message(message='Продолжим...', event=event)
