@@ -2,10 +2,9 @@ import psycopg2
 import vk_api
 import time
 
-import config
+from config import settings
 
-
-vk_session = vk_api.VkApi(token=config.VK_TOKEN)
+vk_session = vk_api.VkApi(token=settings.VK_TOKEN)
 vk = vk_session.get_api()
 
 full_products = dict()
@@ -19,11 +18,11 @@ def get_objects_for_db(execute):
 	"""
 	try:
 		connection = psycopg2.connect(
-			host=config.DB_HOST,
-			user=config.USER,
-			password=config.PASSWORD,
-			database=config.DB_NAME,
-			port=config.DB_PORT
+			host=settings.DB_HOST,
+			user=settings.USER,
+			password=settings.PASSWORD,
+			database=settings.DB_NAME,
+			port=settings.DB_PORT
 		)
 		connection.autocommit = True
 		with connection.cursor() as cursor:

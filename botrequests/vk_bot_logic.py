@@ -3,8 +3,8 @@ from vk_api import VkUpload
 from vk_api.longpoll import VkLongPoll
 from vk_api.keyboard import VkKeyboard
 
-from config import VK_TOKEN, BASE_DIR
-from views import get_product_objects, get_section_dict
+from config.settings import VK_TOKEN
+from botrequests.views import get_product_objects, get_section_dict
 
 
 vk_session = vk_api.VkApi(token=VK_TOKEN)
