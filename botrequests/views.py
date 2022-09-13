@@ -41,7 +41,7 @@ def get_product_objects(section: int):
 	"""
 	Возвращает список продукции в зависимости от выбранной категории.
 	"""
-	if edit_timer() is True or sections not in full_products:
+	if edit_timer() is True or section not in full_products:
 		update_data()
 	products = full_products[section]
 	return products
