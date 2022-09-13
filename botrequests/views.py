@@ -1,6 +1,7 @@
 import psycopg2
 import vk_api
 import time
+from pathlib import Path
 
 from config import settings
 
@@ -92,8 +93,9 @@ def send_photo(url):
 	ускорения отправки ответных сообщений)
 	"""
 	upload = vk_api.VkUpload(vk)
+	photo_url = str(Path(settings.MEDIA_DIR, url))
 	try:
-		photo = upload.photo_messages('media/' + url)
+		photo = upload.photo_messages(photo_url)
 	except FileNotFoundError:
 		photo = upload.photo_messages('media/default.png')
 	owner_id = photo[0]['owner_id']
