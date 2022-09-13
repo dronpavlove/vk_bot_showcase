@@ -65,7 +65,11 @@ def edit_timer(period=24):
 	"""
 	global timer
 	current_time = int(time.strftime('%H', time.localtime()))
-	if current_time - timer > period:
+	if current_time > timer:
+		difference = current_time - timer
+	else:
+		difference = 24 - timer + current_time
+	if difference >= period:
 		timer = current_time
 		return True
 	else:
