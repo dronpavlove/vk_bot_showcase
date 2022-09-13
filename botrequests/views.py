@@ -40,42 +40,28 @@ def get_objects_for_db(execute):
 def get_product_objects(section: int):
 	"""
 	Возвращает список продукции в зависимости от выбранной категории.
-	Обращается или к БД (длительный процесс),
-	или к глобальной переменной (для ускорения процесса)
 	"""
-	global full_products
-	if (edit_timer() is True) or \
-			(section not in full_products):
-		product_tuple = get_objects_for_db(f"""SELECT NAME, DESCRIPTION, PHOTO
-						FROM product WHERE section_id = {section} ORDER BY create_date DESC;""")
-		products = [{
-			'name': i[0], 'description': i[1], 'photo': i[2], 'attachment': send_photo(i[2])
-		} for i in product_tuple]
-		full_products[section] = products
-	else:
-		products = full_products[section]
+	if edit_timer() is True:
+		update_data()
+	products = full_products[section]
 	return products
 
 
 def get_section_dict():
 	"""
 	Возвращает список разделов.
-	Обращается или к БД (длительный процесс),
-	или к глобальной переменной (для ускорения процесса)
 	"""
-	global sections
-	if edit_timer() is True or len(sections) == 0:
-		section_tuple = get_objects_for_db(f"""SELECT ID, NAME FROM section;""")
-		sections = {i[1]: i[0] for i in section_tuple}
+	if edit_timer() is True:
+		update_data()
 	return sections
 
 
-def edit_timer(period=5):
+def edit_timer(period=24):
 	"""
 	Определяет периодичность обновления глобальных переменных
 	full_products = dict()
 	sections = dict()
-	По умолчанию 5 часов
+	По умолчанию 24 часа
 	"""
 	global timer
 	current_time = int(time.strftime('%H', time.localtime()))
@@ -103,3 +89,35 @@ def send_photo(url):
 	access_key = photo[0]['access_key']
 	attachment = f'photo{owner_id}_{photo_id}_{access_key}'
 	return attachment
+
+
+def update_data():
+	"""
+	Возвращает список продукции в зависимости от выбранной категории.
+	Обращается или к БД (длительный процесс),
+	или к глобальной переменной (для ускорения процесса)
+	"""
+	global full_products
+	global sections
+	section_tuple = get_objects_for_db(f"""SELECT ID, NAME FROM section;""")
+	sections = {i[1]: i[0] for i in section_tuple}
+	print('Запустили обновление глобальных переменных')
+	print('Переменная "sections":  ', sections)
+	for section_id in sections.values():
+		product_tuple = get_objects_for_db(f"""SELECT NAME, DESCRIPTION, PHOTO
+									FROM product WHERE section_id = {section_id};""")
+		if section_id not in full_products:
+			products = [{
+				'name': i[0], 'description': i[1], 'photo': i[2], 'attachment': send_photo(i[2])
+			} for i in product_tuple]
+			full_products[section_id] = products
+		else:
+			photo_list = [i['photo'] for i in full_products[section_id]]
+			for product in product_tuple:
+				if product[2] not in photo_list:
+					products = [{
+						'name': i[0], 'description': i[1], 'photo': i[2], 'attachment': send_photo(i[2])
+					} for i in product_tuple]
+					full_products[section_id] = products
+	print('Переменная "full_products":  ', full_products)
+	print('Закончил обновление')
