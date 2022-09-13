@@ -41,7 +41,7 @@ def get_product_objects(section: int):
 	"""
 	Возвращает список продукции в зависимости от выбранной категории.
 	"""
-	if edit_timer() is True:
+	if edit_timer() is True or len(full_products[section]) == 0:
 		update_data()
 	products = full_products[section]
 	return products
@@ -51,7 +51,7 @@ def get_section_dict():
 	"""
 	Возвращает список разделов.
 	"""
-	if edit_timer() is True:
+	if edit_timer() is True or len(sections) == 0:
 		update_data()
 	return sections
 
@@ -115,9 +115,12 @@ def update_data():
 			photo_list = [i['photo'] for i in full_products[section_id]]
 			for product in product_tuple:
 				if product[2] not in photo_list:
-					products = [{
-						'name': i[0], 'description': i[1], 'photo': i[2], 'attachment': send_photo(i[2])
-					} for i in product_tuple]
-					full_products[section_id] = products
+					products = {
+						'name': product[0],
+						'description': product[1],
+						'photo': product[2],
+						'attachment': send_photo(product[2])
+					}
+					full_products[section_id].append(products)
 	print('Переменная "full_products":  ', full_products)
 	print('Закончил обновление')
